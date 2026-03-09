@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mpkg"
+version = "0.1.0"
+description = "Simple Motion Planning Packages"
+authors = [
+  {name = "Logesh"}
+]
+dependencies = [
+  "numpy",
+  "pin",
+  "meshcat",
+  "matplotlib",
+  "scipy"
+]
+requires-python = ">=3.8"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
