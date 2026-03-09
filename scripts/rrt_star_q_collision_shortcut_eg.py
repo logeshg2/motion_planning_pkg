@@ -209,7 +209,7 @@ pinocchio.removeCollisionPairs(model, collision_model, srdf_model_path)     # re
 cube_geom = pinocchio.GeometryObject(
     "cube",
     0,                 # parent joint (0 = world)
-    pinocchio.SE3(np.eye(3), np.array([0.2, 0.2, 0.4])),
+    pinocchio.SE3(np.eye(3), np.array([0.2, 0.3, 0.4])),
     coal.Box(0.15, 0.15, 0.15)
 )
 cube_geom.meshColor = np.array([0.5, 0.5, 0.5, 0.5])
@@ -219,6 +219,21 @@ visual_model.addGeometryObject(cube_geom)
 for i in range(cube_id):
     collision_model.addCollisionPair(
         pinocchio.CollisionPair(i, cube_id)
+    )
+
+cube_geom_1 = pinocchio.GeometryObject(
+    "cube_1",
+    0,                 # parent joint (0 = world)
+    pinocchio.SE3(np.eye(3), np.array([0.0, 0.3, 0.8])),
+    coal.Box(0.2, 0.2, 0.2)
+)
+cube_geom_1.meshColor = np.array([0.5, 0.5, 0.5, 0.5])
+cube_id_1 = collision_model.addGeometryObject(cube_geom_1)
+visual_model.addGeometryObject(cube_geom_1)
+# add cube to the collision pairs
+for i in range(cube_id_1):
+    collision_model.addCollisionPair(
+        pinocchio.CollisionPair(i, cube_id_1)
     )
 ###
 
