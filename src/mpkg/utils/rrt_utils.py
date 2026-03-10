@@ -158,10 +158,12 @@ def getPathNodesFromTree(tree):
 
     while (not startReached):
         tempNode = path[-1]
-        path.append(tempNode.parent)
 
         if (tempNode.parent is None):
             startReached = True
+            break
+
+        path.append(tempNode.parent)
 
     path.reverse()                      # start to goal
     return path

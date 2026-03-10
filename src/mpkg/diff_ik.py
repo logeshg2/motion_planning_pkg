@@ -87,6 +87,9 @@ class IK_Solver:
             dq = np.linalg.pinv(jac) @ error.reshape((6, 1))            # TODO: need to go for DLS method (more numerically stable)
             cur_q += dq.reshape((6,)) * self.dt
 
+            # clip joint positions
+            cur_q = np.clip(cur_q, self.model.lowerPositionLimit, self.model.upperPositionLimit)
+
         if (not self.solved_IK):
             print("Unable to find target joint configuration")
             return None

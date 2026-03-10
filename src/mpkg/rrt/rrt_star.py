@@ -112,7 +112,7 @@ class RRTStarPlanner:
             new_node = steer(near_node, rand_node, self.steer_dist, self.jointLowerLimits, self.jointUpperLimits)
 
             # check collision
-            if (not isCollision_free(near_node, new_node)):
+            if (not isCollision_free(near_node, new_node, self.model, self.collision_model)):
                 print("New node under collision - going back")
                 continue
 
@@ -146,7 +146,7 @@ class RRTStarPlanner:
         # perform shortcutting
         if (self.do_shortcutting):
             path_nodes = shortcut(path_nodes, self.model, self.collision_model, num_itr=100)      
-        
+        print("here")
         # discretize the path
         discretized_path = discretize_joint_position(path_nodes)
 
@@ -171,10 +171,11 @@ class RRTStarPlanner:
         viz.initViewer(open=True)
         viz.loadViewerModel()
 
-        viz.display[0]
+        viz.display(path[0])
         time.sleep(0.05)
 
         input("Enter to simulate:")
         for q_p in path:
             viz.display(q_p)
-            time.sleep(0.05)
+            time.sleep(0.01)
+        input("Enter to quit:")
