@@ -3,10 +3,20 @@
 """Pinocchio + Robot arm utils"""
 
 
+import os
 import pinocchio
 import numpy as np
 from scipy.spatial.transform import Rotation
 from pinocchio.visualize import MeshcatVisualizer
+
+
+def loadModelFromURDF(urdf_path: str):
+    """Function to create pinocchio model from urdf file"""
+    
+    assert os.path.exists(urdf_path), "URDF path does not exist!"
+
+    model, collision_model, visual_model = pinocchio.buildModelsFromUrdf(urdf_path)
+    return model, collision_model, visual_model
 
 
 def add_self_collision(model, collision_model, srdf_path: str):
@@ -88,5 +98,17 @@ def visualizeAndWait(model, collision_model, visual_model, q_config, wait=True):
     viz.displayCollisions(True)
 
     if (wait):
-        print("Enter to continue")
-        input()
+        input("Enter to quit: ")
+
+
+def get_EE_pose(eeFrameId, config_q, model, data):
+    """Function to get the EE pose for given joint config"""
+    
+    pinocchio.framesForwardKinematics(model, data, config_q)
+    temp = data.oMf[eeFrameId]
+    
+    eepose = np.eye(4)
+    eepose[0:3, 3] = temp.translation
+    eepose[0:3, 0:3] = temp.rotation
+
+    return eepose
