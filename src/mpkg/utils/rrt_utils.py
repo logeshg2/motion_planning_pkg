@@ -124,7 +124,7 @@ def discretize_joint_position(path_node, step=0.01):
     return dis_path
 
 
-def shortcut(path, model, collision_model, num_itr=100):
+def shortcut(path, model, collision_model, num_itr=100, verbose=False):
     """Function to find shortcut path between nodes in the path (reduces jerky and long paths)"""
 
     if (len(path) < 3):
@@ -142,7 +142,8 @@ def shortcut(path, model, collision_model, num_itr=100):
         # check whether straight line between nodes are collision free
         if (isCollision_free(low_node, high_node, model, collision_model)):
             path = path[:low_idx+1] + path[high_idx:]
-            print("Path shortcut applied!")
+            if (verbose):
+                print(f"Path shortcut applied! - {low_idx} to {high_idx}")
     
     return path
 

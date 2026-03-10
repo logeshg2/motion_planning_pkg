@@ -90,6 +90,8 @@ class IK_Solver:
             # clip joint positions
             cur_q = np.clip(cur_q, self.model.lowerPositionLimit, self.model.upperPositionLimit)
 
+            count += 1
+
         if (not self.solved_IK):
             print("Unable to find target joint configuration")
             return None

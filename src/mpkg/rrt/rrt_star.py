@@ -43,7 +43,8 @@ class RRTStarPlanner:
             goal_threshold: int = 0.5,
             goal_bias: float = 0.20,
             do_shortcutting:bool = True,
-            visualize:bool = False
+            visualize:bool = False,
+            verbose: bool = True
         ):
         
         self.model = pinModel
@@ -52,6 +53,7 @@ class RRTStarPlanner:
         self.targetFrameId = self.model.getFrameId(target_frame_name)
         self.jointLowerLimits = self.model.lowerPositionLimit
         self.jointUpperLimits = self.model.upperPositionLimit
+        self.verbose = verbose
         
         # RRT* (planning parameters)
         self.maxIterations = max_iterations
@@ -105,7 +107,8 @@ class RRTStarPlanner:
             near_node = nearest(self.tree, rand_node)
 
             if (near_node is None):
-                print("Random node failed (no near node found in the tree)")
+                if (self.verbose):
+                    print("Random node failed (no near node found in the tree)")
                 continue
             
             # steer towards the randomly generated node
@@ -113,7 +116,8 @@ class RRTStarPlanner:
 
             # check collision
             if (not isCollision_free(near_node, new_node, self.model, self.collision_model)):
-                print("New node under collision - going back")
+                if (self.verbose):
+                    print("New node under collision - going back")
                 continue
 
             # update parent for back tracking (path finding)
@@ -145,8 +149,8 @@ class RRTStarPlanner:
         
         # perform shortcutting
         if (self.do_shortcutting):
-            path_nodes = shortcut(path_nodes, self.model, self.collision_model, num_itr=100)      
-        print("here")
+            path_nodes = shortcut(path_nodes, self.model, self.collision_model, num_itr=100, verbose=self.verbose)      
+
         # discretize the path
         discretized_path = discretize_joint_position(path_nodes)
 

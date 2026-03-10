@@ -8,7 +8,8 @@ from scipy.spatial.transform import Rotation
 
 from mpkg.diff_ik import IK_Solver
 from mpkg.rrt.rrt_star import RRTStarPlanner
-from mpkg.utils.pin_utils import loadModelFromURDF, add_self_collision
+from mpkg.utils.base_utils import createPoseTransform
+from mpkg.utils.pin_utils import loadModelFromURDF, add_self_collision, visualizeAndWait
 
 
 URDF_PATH = "/home/logesh/fanuc_ws/src/fanuc_ros2_drivers/src/fanuc_description/urdf/lrmate200id4s.urdf"
@@ -25,12 +26,12 @@ def main():
     # current_config
     cur_q = np.zeros((6,))
     # targetPose
-    tarpose = np.eye(4)
-    tarpose[0:3, 3] = [0.0, 0.4, 0.3]
-    tarpose[0:3, 0:3] = Rotation.from_euler("xyz", [0, 180, 180], degrees=True).as_matrix()
-
+    tarpose = createPoseTransform([0.3, -0.3, 0.1], [0, 180, 180])
+    
     # compte IK
     goal_q = ikSolver.solve_ik(cur_q.copy(), tarpose)
+    if (goal_q is None):
+        exit(0)
     ###
 
     ### Compute Path for Goal Config ###
@@ -42,7 +43,8 @@ def main():
         visual_model,
         "tool0",
         rng_seed=42,
-        visualize=True
+        visualize=True,
+        verbose=False
     )
 
     # self collision
@@ -51,7 +53,8 @@ def main():
     # compute path
     config_path = planner.plan(start_config = start_q, goal_config = goal_q)
 
-    print(f"Path length:", len(config_path))
+    if (config_path is not None):
+        print(f"Path length:", len(config_path))
     ###
 
 
