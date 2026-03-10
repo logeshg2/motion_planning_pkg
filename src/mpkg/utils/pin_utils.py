@@ -6,10 +6,30 @@
 import pinocchio
 import numpy as np
 from scipy.spatial.transform import Rotation
+from pinocchio.visualize import MeshcatVisualizer
 
 
-def add_self_collision(collision_model, srdf_path: str):
-    pass
+def add_self_collision(model, collision_model, srdf_path: str):
+    """Function to add all self collision pairs"""
+
+    collision_model.addAllCollisionPairs()
+    # remove adjacent and never collsion pairs
+    pinocchio.removeCollisionPairs(model, collision_model, srdf_path)
+
+
+def add_object_collision(geom_object, collision_model, visual_model):
+    """Function to add custom geometry object ro visual and collision model + add them to collision pairs"""
+    
+    gemo_obj_id = collision_model.addGeometryObject(geom_object)
+    visual_model.addGeometryObject(geom_object)
+    
+    # add cube to the collision pairs
+    for idx in range(gemo_obj_id):
+        collision_model.addCollisionPair(
+            pinocchio.CollisionPair(idx, gemo_obj_id)
+        )
+    
+    return gemo_obj_id
 
 
 def get_random_config(model):
@@ -55,4 +75,18 @@ def isCollision_free(node1, node2, model, collision_model, step=0.01):
     return True
 
 
+def visualizeAndWait(model, collision_model, visual_model, q_config, wait=True):
+    """Simple visualizing function to visual the robot arm on a given joint config"""
+    
+    viz = MeshcatVisualizer(model, collision_model, visual_model)
+    viz.initViewer(open=True)
 
+    viz.loadViewerModel()
+
+    viz.display(q_config)
+    viz.displayVisuals(True)
+    viz.displayCollisions(True)
+
+    if (wait):
+        print("Enter to continue")
+        input()
