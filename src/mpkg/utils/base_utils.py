@@ -17,7 +17,7 @@ def createPoseTransform(
     ):
     """Function to create 4x4 transformation matrix"""
 
-    assert orient_type in ["euler", "quat", "rotvec"], "Wrong orientation type - ['euler', 'quat', 'rotvec']"
+    assert (orient_type in ["euler", "quat", "rotvec"]), "Wrong orientation type - ['euler', 'quat', 'rotvec']"
 
     T = np.eye(4)
     T[0:3, 3] = translation

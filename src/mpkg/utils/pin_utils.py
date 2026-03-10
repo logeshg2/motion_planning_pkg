@@ -4,6 +4,7 @@
 
 
 import os
+import coal
 import pinocchio
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -40,6 +41,40 @@ def add_object_collision(geom_object, collision_model, visual_model):
         )
     
     return gemo_obj_id
+
+
+def getGeomObject(
+        geom_name: str,
+        geom_type: str = "cube",                    # ["cube", "sphere"]
+        parent_joint: int = 0,                      # by default in world frame
+        translation: np.ndarray = np.zeros((3,)),
+        orientation: np.ndarray = None,
+        dimension: np.ndarray = None,
+        mesh_color: np.ndarray = np.array([0.5, 0.5, 0.5, 0.5])
+    ):
+    """Function to create geom object with given parameters"""
+
+    assert (geom_type in ['cube', 'sphere']), "Wrong Geometry Type - ['cube', 'sphere']"
+    assert (dimension is not None), "Dimension of object is not provided"
+    
+    if (orientation is None):
+        orientation = np.eye(3)
+    # TODO: need to implement other orientation converstions
+
+    if (geom_type == "cube"):
+        obj = coal.Box(dimension[0], dimension[1], dimension[2])
+    elif (geom_type == "sphere"):
+        obj = coal.Sphere(dimension[0])
+
+    object_geom = pinocchio.GeometryObject(
+        geom_name,
+        parent_joint,
+        pinocchio.SE3(np.array(orientation), np.array(translation)),
+        obj
+    )
+    object_geom.meshColor = mesh_color
+
+    return object_geom
 
 
 def get_random_config(model):
