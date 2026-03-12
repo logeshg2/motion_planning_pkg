@@ -39,6 +39,7 @@ def main():
 
     # targetPose
     tarpose = createPoseTransform([0.29, 0.3, 0.34], [-180, 0, 0])
+    tarpose = createPoseTransform([0.4, 0.0, 0.4], [-180, 0, 0])
     
     # compte IK
     goal_q = ikSolver.solve_ik(cur_q.copy(), tarpose)
@@ -82,10 +83,13 @@ def main():
         couplled_q = np.rad2deg(couplled_q)
 
         bot.write_joint_pose(couplled_q, blocking=False)
-        time.sleep(0.001)
-
-        while (bot.is_moving()):
-            time.sleep(0.001)
+        
+        # wait until arm reaches the target joint config
+        error = np.max(np.abs(np.array(couplled_q) - np.array(bot.read_current_joint_position())))
+        while (error > 1):
+            error = np.max(np.abs(np.array(couplled_q) - np.array(bot.read_current_joint_position())))
+            bot.write_joint_pose(couplled_q, blocking=False)
+            time.sleep(0.0001)
         
         print("Moving real arm!")
     
