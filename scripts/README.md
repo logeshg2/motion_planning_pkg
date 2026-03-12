@@ -25,7 +25,7 @@ python3 differential_IK.py
 
 ### RRT vs. RRT* (2D - No Collision Objects)
 
-<img src="../images/rrt_2d.png" alt="" width="300"/> <img src="../images/rrt_star_2d.png" alt="" width="300"/>
+<img src="../images/rrt_2d.png" alt="" width="500"/> <img src="../images/rrt_star_2d.png" alt="" width="500"/>
 
 Example Scripts:
 ```bash
@@ -40,7 +40,7 @@ python3 2D_rrt_star_eg.py
 
 ### RRT vs. RRT* (2D - With Collision Objects)
 
-<img src="../images/rrt_collision_2d.png" alt="" width="300"/> <img src="../images/rrt_star_collision_2d.png" alt="" width="300"/>
+<img src="../images/rrt_collision_2d.png" alt="" width="500"/> <img src="../images/rrt_star_collision_2d.png" alt="" width="500"/>
 
 Example Scripts:
 ```bash
