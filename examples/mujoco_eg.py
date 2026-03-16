@@ -11,12 +11,18 @@ from scipy.spatial.transform import Rotation
 
 from mpkg.diff_ik import IK_Solver
 from mpkg.rrt.rrt_star import RRTStarPlanner
-from mpkg.utils.pin_utils import loadModelFromMJCF
+from mpkg.utils.pin_utils import (
+    loadModelFromMJCF,
+    add_self_collision, 
+    getGeomObject, 
+    add_object_collision
+)
 from mpkg.utils.base_utils import createPoseTransform
 
 
 UR5_XML_PATH = "/home/logesh/mujoco_ws/mujoco_menagerie/universal_robots_ur5e/ur5e.xml"
 SCENE_PATH = "/home/logesh/mujoco_ws/mujoco_menagerie/universal_robots_ur5e/scene.xml"
+UR5_SRDF_PATH = "/home/logesh/fanuc_ws/src/ur5e.srdf"
 
 
 ### mujoco setup
@@ -24,7 +30,7 @@ SCENE_PATH = "/home/logesh/mujoco_ws/mujoco_menagerie/universal_robots_ur5e/scen
 mjModel = mujoco.MjModel.from_xml_path(SCENE_PATH)
 mjData = mujoco.MjData(mjModel)
 
-dt = 0.02
+dt = 0.2
 mjModel.opt.timestep = dt
 
 # get all actuator name (no gripper the choosen ur5 robotic arm)
@@ -39,7 +45,8 @@ home_key_id = mjModel.key("home").id
 ### Pinocchio model
 
 model, collision_model, visual_model = loadModelFromMJCF(UR5_XML_PATH)
-# TODO: need to add self collision
+add_self_collision(model, collision_model, UR5_SRDF_PATH)
+
 
 ###
 
@@ -57,7 +64,11 @@ if (des_q is None):
 ###
 
 
-###
+### RRT* planner
+
+# add objects to pin env
+cube_geom = getGeomObject("cube1", translation=[0.4, 0.0, 0.3], dimension=[0.3, 0.3, 0.3])
+cube_id_1 = add_object_collision(cube_geom, collision_model, visual_model)
 
 # rrt star planner
 planner = RRTStarPlanner(
@@ -65,7 +76,7 @@ planner = RRTStarPlanner(
     collision_model, 
     visual_model,
     "attachment_site",
-    rng_seed=42,
+    # rng_seed=42,
     visualize=False,
     verbose=False
 )
@@ -106,6 +117,20 @@ with launch_passive(mjModel, mjData, show_left_ui=False, show_right_ui=False) as
             if (np.linalg.norm(mjData.qpos - config_path[cur_idx], ord=np.inf) < 0.01):
                 print(f"position-{cur_idx} completed")
                 cur_idx += 1
+
+        # adding custom collision object
+        # reset user scene
+        viewer.user_scn.ngeom = 0
+        geom = viewer.user_scn.geoms[viewer.user_scn.ngeom]
+        viewer.user_scn.ngeom += 1
+        mujoco.mjv_initGeom(
+            geom,
+            mujoco.mjtGeom.mjGEOM_BOX,
+            np.array([0.15, 0.15, 0.15]),
+            np.array([-0.4, 0.0, 0.3]),
+            np.eye(3).flatten(),
+            np.array([1,0,0,1])
+        )
 
         mujoco.mj_step(mjModel, mjData)
         viewer.sync()
