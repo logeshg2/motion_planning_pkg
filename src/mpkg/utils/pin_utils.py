@@ -20,6 +20,15 @@ def loadModelFromURDF(urdf_path: str):
     return model, collision_model, visual_model
 
 
+def loadModelFromMJCF(mjcf_path: str):
+    """Function to create pinocchio model from mjcf file"""
+
+    assert os.path.exists(mjcf_path), "MJCF path does not exist!"
+    
+    model, collision_model, visual_model = pinocchio.buildModelsFromMJCF(mjcf_path)
+    return model, collision_model, visual_model
+
+
 def add_self_collision(model, collision_model, srdf_path: str):
     """Function to add all self collision pairs"""
 
