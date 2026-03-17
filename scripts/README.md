@@ -66,7 +66,10 @@ python3 2D_rrt_connect_eg.py
 python3 2D_rrt_connect_collision_eg.py
 ```
 > [!NOTE]
-> Time Taken Analysis: (For same 2D grid - same random seed)
-> RRT*: 0.321 sec
-> RRT: 0.116 sec
-> RRT-Connect: 0.036 sec
+> 
+> **Time To Goal Analysis:** (Same 2D grid | Same random seed) <br>
+> **RRT***: 0.321 sec <br>
+> **RRT**: 0.116 sec <br>
+> **RRT-Connect**: 0.036 sec
+>
+> RRT-Connect is ~10x faster than RRT* but not the optimal path. (thats the tradeoff we get with RRT-Connect vs. RRT*)
