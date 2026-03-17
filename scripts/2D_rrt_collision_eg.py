@@ -4,6 +4,7 @@
 This is an example implementation of RRT for path planning for 2D navigation with collision check.
 """
 
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -112,13 +113,15 @@ steer_dist = 0.5  # for now keeping steering distance as constant
 goal_threshold = 0.5  # again for now (it should be lot closer)
 reachedGoal = False
 
-rng = np.random.default_rng()
+rng = np.random.default_rng(seed=42)
 
 # start node
 start = Node(start_coord, None)     # start node does not have any parent
 # tree
 tree = []
 tree.append(start)
+
+startTime = time.perf_counter()
 
 for idx in range(K):
     # generate random node in free C-space
@@ -175,5 +178,7 @@ path.reverse()
 
 print("\nComputed Path\n")
 printPath(path)
+
+print(f"\nTime Taken: {time.perf_counter() - startTime} sec")
 
 plotPaths(path, tree)

@@ -4,6 +4,7 @@
 This is an example implementation of RRT* for path planning for 2D navigation.
 """
 
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -182,6 +183,8 @@ start = Node(start_coord, None, 0)     # start node does not have any parent
 tree = []
 tree.append(start)
 
+startTime = time.perf_counter()
+
 for idx in range(K):
     # generate random node in free C-space
     rand_node = Node(get_rand_coord())
@@ -243,5 +246,7 @@ print("\nComputed Path\n")
 printPath(path)
 
 print(f"\nTotal Cost: {path[-1].cost}")
+
+print(f"\nTime Taken: {time.perf_counter() - startTime} sec")
 
 plotPaths(path, tree)

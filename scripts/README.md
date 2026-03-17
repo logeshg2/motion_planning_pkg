@@ -50,3 +50,23 @@ python3 2D_rrt_collision_eg.py
 # rrt star 2d
 python3 2D_rrt_star_collision_eg.py
 ```
+
+---
+
+### RRT Connect (with and without collision)
+
+<img src="../images/rrt_connect_2d.png" alt="" width="500"/> <img src="../images/rrt_connect_2d_collision.png" alt="" width="500"/>
+
+Example Scripts:
+```bash
+# rrt 2d
+python3 2D_rrt_connect_eg.py
+
+# rrt star 2d
+python3 2D_rrt_connect_collision_eg.py
+```
+> [!NOTE]
+> Time Taken Analysis: (For same 2D grid - same random seed)
+> RRT*: 0.321 sec
+> RRT: 0.116 sec
+> RRT-Connect: 0.036 sec

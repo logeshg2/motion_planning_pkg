@@ -4,6 +4,7 @@
 This is an example implementation of RRT Connect for path planning for 2D navigation with collision check.
 """
 
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -52,7 +53,7 @@ def steer(near_node, rand_node):
 
 def printPath(path):
     for node in path:
-        print(f"{node.coord}")
+        print(f"{node}")
 
 def plotPaths(path, tree):
     # TREE
@@ -77,8 +78,8 @@ def plotPaths(path, tree):
     coord_x = []
     coord_y = []
     for node in path:
-        coord_x.append(node.coord[0])
-        coord_y.append(node.coord[1])
+        coord_x.append(node[0])
+        coord_y.append(node[1])
 
     plt.scatter(coord_x, coord_y)
     plt.plot(coord_x, coord_y)
@@ -144,16 +145,17 @@ def Connect(tree, node):
 
     return goal_reached
 
-def reverseTree(tree, first_node_parent):
-    newTree = []
-    for idx in range(len(tree)-1, -1, -1):
-        node = tree[idx]
-        if (len(newTree) == 0):
-            node.parent = first_node_parent
-        else:
-            node.parent = newTree[-1]
-        newTree.append(node)
-    return newTree
+def getPathFromTree(tree):
+    path = []
+    startNode = tree[-1]
+
+    while (startNode is not None):
+        path.append(startNode.coord)
+        startNode = startNode.parent
+    
+    path.reverse()
+
+    return path
 
 def shortcut(path, num_itr=100):
     if (len(path) < 3):
@@ -169,7 +171,7 @@ def shortcut(path, num_itr=100):
         low_node, high_node = path[low_idx], path[high_idx]
         
         # check whether straight line between nodes are collision free
-        if (isCollision_free(low_node, high_node, 0.01)):
+        if (isCollision_free(Node(low_node), Node(high_node), 0.01)):
             path = path[:low_idx+1] + path[high_idx:]
             print("Path shortcut applied!")
     
@@ -194,7 +196,7 @@ steer_dist = 0.5  # for now keeping steering distance as constant
 goal_threshold = 0.5  # again for now (it should be lot closer)
 reachedGoal = False
 
-rng = np.random.default_rng()
+rng = np.random.default_rng(seed=42)
 
 # start node
 start = Node(start_coord, None)     # start node does not have any parent
@@ -203,9 +205,11 @@ goal = Node(goal_coord, None)
 # tree
 tree1 = []
 tree2 = []
-tree = []
+path = []
 tree1.append(start)
 tree2.append(goal)
+
+startTime = time.perf_counter()
 
 for idx in range(K):
     if np.random.random() < 0.1:
@@ -240,60 +244,33 @@ for idx in range(K):
         tree1, tree2 = tree2, tree1
     else:
         reachedGoal = True
+        treeNodes = tree1.copy()
+        treeNodes.extend(tree2.copy())
+
         if (np.all(tree1[0].coord == start_coord)):
-            # tree2[-1].parent = tree1[-1]
-            tree2 = reverseTree(tree2, tree1[-1])
-            tree1.extend(tree2)
-            tree = tree1
+            tree1 = getPathFromTree(tree1)  # from start
+            tree2 = getPathFromTree(tree2)  # from goal
+            tree2.reverse()
+            path.extend(tree1)
+            path.extend(tree2)
         else:
-            # tree1[-1].parent = tree2[-1]
-            tree1 = reverseTree(tree1, tree2[-1])
-            tree2.extend(tree1)
-            tree = tree2 
+            tree1 = getPathFromTree(tree1)  # from goal
+            tree2 = getPathFromTree(tree2)  # from start
+            tree1.reverse()
+            path.extend(tree2)
+            path.extend(tree1)
         break
-    
-    # tree.append(new_node)
-
-    # # check closness of new node to goal node (using thresholding)
-    # goal_dist = np.linalg.norm(np.array(goal_coord) - new_node.coord)
-    # if (goal_dist <= goal_threshold):
-    #     # if distance is minimal (connect to the goal node)
-    #     goal_node = Node(goal_coord, new_node)
-    #     tree.append(goal_node)
-
-    #     reachedGoal = True
-    #     print("Goal Position reached!")
-    #     break
 
 if (not reachedGoal):
     print("Unable to reach goal this time!!!")
     exit(0)
 
-# get the path from start node to goal node
-path = []
-goalNode = tree[-1]     # last node inserted in goal node
-path.append(goalNode)
-startReached = False
-
-while (not startReached):
-    tempNode = path[-1]
-    path.append(tempNode.parent)
-
-    if (np.all(np.equal(tempNode.parent.coord, np.array(start_coord)))):
-        startReached = True
-
-path.reverse()
-
-# apply path shortcut
-path = shortcut(path, num_itr=80)
-
-# for p in path:
-#     if (p.parent is not None):
-#         print(f"{p.coord} - {p.parent.coord}")
-#     print(f"{p.coord} - {None}")
-# exit(0)
+# apply shortcut
+# path = shortcut(path)
 
 print("\nComputed Path\n")
 printPath(path)
 
-plotPaths(path, tree)
+print(f"\nTime Taken: {time.perf_counter() - startTime} sec")
+
+plotPaths(path, treeNodes)
