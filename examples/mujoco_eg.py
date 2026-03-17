@@ -10,7 +10,7 @@ from mujoco.viewer import launch_passive
 from scipy.spatial.transform import Rotation
 
 from mpkg.diff_ik import IK_Solver
-from mpkg.rrt.rrt_star import RRTStarPlanner
+from mpkg.rrt.rrt_connect import RRTConnectPlanner
 from mpkg.utils.pin_utils import (
     loadModelFromMJCF,
     add_self_collision, 
@@ -67,16 +67,16 @@ if (des_q is None):
 ### RRT* planner
 
 # add objects to pin env
-cube_geom = getGeomObject("cube1", translation=[0.4, 0.0, 0.3], dimension=[0.3, 0.3, 0.3])
+cube_geom = getGeomObject("cube1", translation=[0.4, 0.0, 0.3], dimension=[0.3, 0.3, 0.6])
 cube_id_1 = add_object_collision(cube_geom, collision_model, visual_model)
 
 # rrt star planner
-planner = RRTStarPlanner(
+planner = RRTConnectPlanner(
     model, 
     collision_model, 
     visual_model,
     "attachment_site",
-    # rng_seed=42,
+    rng_seed=42,
     visualize=False,
     verbose=False
 )
@@ -126,7 +126,7 @@ with launch_passive(mjModel, mjData, show_left_ui=False, show_right_ui=False) as
         mujoco.mjv_initGeom(
             geom,
             mujoco.mjtGeom.mjGEOM_BOX,
-            np.array([0.15, 0.15, 0.15]),
+            np.array([0.15, 0.15, 0.3]),
             np.array([-0.4, 0.0, 0.3]),
             np.eye(3).flatten(),
             np.array([1,0,0,1])
