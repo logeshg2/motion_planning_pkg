@@ -87,6 +87,7 @@ class RRTStarPlanner:
 
         # reset paramters
         self.tree = []
+        goal_dist = 0
         self.reachedGoal = False
         self.startTime = time.perf_counter()
 
@@ -142,6 +143,7 @@ class RRTStarPlanner:
         
         if (not self.reachedGoal):
             print("Unable to reach goal this time!!!")
+            print(f"Goal Distance is: {goal_dist}")
             return None
         
         # get path from tree
