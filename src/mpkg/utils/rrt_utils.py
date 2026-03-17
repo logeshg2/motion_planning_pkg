@@ -92,6 +92,47 @@ def upDateTree(tree, neigh_radius, model, collision_model):
             node.parent = newNode
 
 
+def Connect(tree, node, model, collision_model, goal_threshold, steer_dist, lowerLimit, upperLimit):
+    """Function to perform 'connect' operation for RRT-Connect algorithm"""
+
+    goal_reached = False
+
+    # get the nearest node to the node
+    near_node = nearest(tree, node)
+    
+    # if none - then both goal and near node are same (in the given tree)
+    if (near_node is None):
+        return True
+
+    # loop until we advance in the path to the randomly generated node
+    while True:
+
+        # steer
+        new_node = steer(near_node, node, steer_dist, lowerLimit, upperLimit)
+        
+        if (new_node is None):
+            print(f"The steered new node has problems!")
+            continue
+        
+        # check collision status of the node
+        if (not isCollision_free(near_node, new_node, model, collision_model)):
+            # return 'false' if new node leads to collision
+            goal_reached = False
+            break
+
+        # check the goal reach status
+        dist = np.linalg.norm(node.q - new_node.q)
+        if (dist < goal_threshold):
+            goal_reached = True
+            break
+
+        new_node.parent = near_node
+        tree.append(new_node)
+        near_node = new_node
+
+    return goal_reached
+
+
 def discretize_joint_position(path_node, step=0.01):
     """
     Function to discretize the input path (linear interpolation)
