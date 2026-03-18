@@ -30,7 +30,7 @@ UR5_SRDF_PATH = "/home/logesh/fanuc_ws/src/ur5e.srdf"
 mjModel = mujoco.MjModel.from_xml_path(SCENE_PATH)
 mjData = mujoco.MjData(mjModel)
 
-dt = 0.2
+dt = 0.016
 mjModel.opt.timestep = dt
 
 # get all actuator name (no gripper the choosen ur5 robotic arm)
@@ -135,9 +135,9 @@ with launch_passive(mjModel, mjData, show_left_ui=False, show_right_ui=False) as
         mujoco.mj_step(mjModel, mjData)
         viewer.sync()
 
-        remaining_time = time.time() - start_time
-        if (remaining_time > 0):
-            time.sleep(remaining_time)
+        # remaining_time = time.time() - start_time
+        # if (remaining_time > 0):
+        #     time.sleep(remaining_time)
 
 
 def main():

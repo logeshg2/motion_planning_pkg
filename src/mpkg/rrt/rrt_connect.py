@@ -104,7 +104,11 @@ class RRTConnectPlanner:
             # NOTE: goal bias is IMP for exploitation
             # NOTE: random config is IMP for exploration
             if (np.random.random() < self.goal_bias):
-                rand_node = Node(goal_config)
+                # goal also changes when tree flips
+                if (self.treeFlip == 1):
+                    rand_node = Node(goal_config)
+                else:
+                    rand_node = Node(start_config)
             else:
                 rand_node = Node(get_random_config(self.model))
             
