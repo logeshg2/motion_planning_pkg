@@ -49,7 +49,7 @@ class IK_Solver:
             print("Target Pose is not 4x4 transformation matrix")
             return None
 
-        cur_q = np.array(cur_q).reshape((6,))
+        cur_q = np.array(cur_q) #.reshape((6,))
 
         # reset parameters
         self.startTime = time.perf_counter()
@@ -84,8 +84,8 @@ class IK_Solver:
             # compute jac
             jac = pinocchio.computeFrameJacobian(self.model, self.data, cur_q, self.eeFrameId, pinocchio.LOCAL)
             # compute dq from cartesian vel
-            dq = np.linalg.pinv(jac) @ error.reshape((6, 1))            # TODO: need to go for DLS method (more numerically stable)
-            cur_q += dq.reshape((6,)) * self.dt
+            dq = np.linalg.pinv(jac) @ error            # TODO: need to go for DLS method (more numerically stable)
+            cur_q += dq * self.dt
 
             # clip joint positions
             cur_q = np.clip(cur_q, self.model.lowerPositionLimit, self.model.upperPositionLimit)
