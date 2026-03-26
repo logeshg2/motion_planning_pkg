@@ -73,3 +73,7 @@ python3 2D_rrt_connect_collision_eg.py
 > **RRT-Connect**: 0.036 sec
 >
 > RRT-Connect is ~10x faster than RRT* but not the optimal path. (thats the tradeoff we get with RRT-Connect vs. RRT*)
+
+#### RRT Connect (Mujoco Example)
+
+[![Watch the video](https://img.youtube.com/vi/HQBl1GDsaR0/0.jpg)](https://youtu.be/HQBl1GDsaR0)
