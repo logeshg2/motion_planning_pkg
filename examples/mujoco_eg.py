@@ -114,7 +114,7 @@ with launch_passive(mjModel, mjData, show_left_ui=False, show_right_ui=False) as
         else:
             mjData.ctrl[:] = config_path[cur_idx]
 
-            if (np.linalg.norm(mjData.qpos - config_path[cur_idx], ord=np.inf) < 0.01):
+            if (np.linalg.norm(mjData.qpos - config_path[cur_idx], ord=np.inf) < 0.012):
                 print(f"position-{cur_idx} completed")
                 cur_idx += 1
 
@@ -135,9 +135,9 @@ with launch_passive(mjModel, mjData, show_left_ui=False, show_right_ui=False) as
         mujoco.mj_step(mjModel, mjData)
         viewer.sync()
 
-        # remaining_time = time.time() - start_time
-        # if (remaining_time > 0):
-        #     time.sleep(remaining_time)
+        remaining_time = time.time() - start_time
+        if (remaining_time > 0):
+            time.sleep(remaining_time)
 
 
 def main():
